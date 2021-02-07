@@ -5,20 +5,20 @@ import 'package:yaml/yaml.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class Trans {
+class Local {
   final Locale locale;
 
-  Trans(this.locale);
+  Local(this.locale);
 
   // Helper method to keep the code in the widgets concise
   // Localizations are accessed using an InheritedWidget "of" syntax
-  static Trans of(BuildContext context) {
-    return Localizations.of<Trans>(context, Trans);
+  static Local of(BuildContext context) {
+    return Localizations.of<Local>(context, Local);
   }
 
   //This is the static member for allowing simple access to the delegate
   // from the MaterialApp
-  static const LocalizationsDelegate<Trans> delegate =
+  static const LocalizationsDelegate<Local> delegate =
       _AppLocalizationsDelegate();
 
   static const List<String> files = ['app', 'setting', 'auth', 'menu'];
@@ -69,7 +69,7 @@ class Trans {
 
 // LocalizationsDelegate is a factory for a set of localized resources
 // In this case, the localized strings will be gotten in an AppLocalizations object
-class _AppLocalizationsDelegate extends LocalizationsDelegate<Trans> {
+class _AppLocalizationsDelegate extends LocalizationsDelegate<Local> {
   const _AppLocalizationsDelegate();
 
   @override
@@ -80,9 +80,9 @@ class _AppLocalizationsDelegate extends LocalizationsDelegate<Trans> {
   }
 
   @override
-  Future<Trans> load(Locale locale) async {
+  Future<Local> load(Locale locale) async {
     // AppLocalizations class is where the YAML loading actually runs
-    var localizations = Trans(locale);
+    var localizations = Local(locale);
     await localizations.load();
     return localizations;
   }
