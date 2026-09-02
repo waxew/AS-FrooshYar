@@ -85,6 +85,11 @@ dependency_overrides:
       url: https://github.com/evan361425/flutter_blue_plus
       ref: uint8
       path: packages/flutter_blue_plus
+  flutter_blue_plus_platform_interface:
+    git:
+      url: https://github.com/evan361425/flutter_blue_plus
+      ref: uint8
+      path: packages/flutter_blue_plus_platform_interface
 
 dev_dependencies:
   flutter_test:
