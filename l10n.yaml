@@ -1,13 +1,11 @@
-# https://docs.flutter.dev/development/accessibility-and-localization/internationalization#configuring-the-l10n-yaml-file
+# Flutter localization generation for AS-FrooshYar.
 arb-dir: lib/l10n
 template-arb-file: app_zh.arb
 output-dir: lib/l10n/gen
 output-localization-file: app_localizations.dart
 preferred-supported-locales:
+- "fa"
 - "en"
 - "zh"
-# - "zh_TW"
-# - "zh_Hant"
-# - "zh_Hant_TW"
 use-deferred-loading: true
 untranslated-messages-file: docs/untranslated.json
