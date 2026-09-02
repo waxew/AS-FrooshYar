@@ -1,4 +1,4 @@
-appTitle: POS System
+appTitle: FrooshYar
 act:
   success:
   - Done Successfully!
@@ -30,10 +30,10 @@ title:
   stock: Inventory
   cashier: Cashier
   settings: Settings
-  menu: Menu
+  menu: Products
   printers: Printer
-  transit: Data Transfer
-  orderAttributes: Customer Settings
+  transit: Backup & Transfer
+  orderAttributes: Customers
   stockQuantities: Quantities
   elf: Suggestions
   more: More
@@ -49,8 +49,8 @@ dialog:
 
     {more}This action cannot be undone!
   - Content displayed on the DeleteDialog.
-  - name: {example: Veggie Sandwich}
-    more: {example: What other impacts deleting this item will have, description: More details about the side effects of deletion}
+  - name: {example: Product}
+    more: {example: Additional deletion impact, description: More details about the side effects of deletion}
 image:
   holder:
     create: Tap to add image
