@@ -1,4 +1,4 @@
-import '../services/frooshyar_dashboard_service.dart';
+import '../../services/frooshyar_dashboard_service.dart';
 
 /// Provides dashboard metrics to the UI layer.
 class DashboardDataController {
