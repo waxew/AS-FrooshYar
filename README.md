@@ -1,55 +1,67 @@
-# POS System
+# AS-FrooshYar | فروشیار
 
-[![Apache 2.0](https://img.shields.io/github/license/nebula-plugins/gradle-netflixoss-project-plugin.svg)](http://www.apache.org/licenses/LICENSE-2.0)
-[![codecov](https://codecov.io/gh/evan361425/flutter-pos-system/branch/master/graph/badge.svg?token=KCMZRMU47V)](https://codecov.io/gh/evan361425/flutter-pos-system)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/a3713a1200f340e78f7209f4a55be993)](https://www.codacy.com/gh/evan361425/flutter-pos-system/dashboard?utm_source=github.com&utm_medium=referral&utm_content=evan361425/flutter-pos-system&utm_campaign=Badge_Grade)
+فروشیار نرم‌افزار فروش، صندوق و مدیریت موجودی برای کسب‌وکارهای کوچک و متوسط است. پروژه با Flutter توسعه داده می‌شود و هسته آن Offline-first است؛ عملیات اصلی فروش و مدیریت داده برای کارکرد روزمره به اینترنت وابسته نیست.
 
-An open-source Flutter app designed for small restaurants and businesses.
+## وضعیت فعلی
 
-🌏
-[English](https://evan361425.github.io/flutter-pos-system/en/) |
-[**中文**](https://evan361425.github.io/flutter-pos-system/zh/)
+پروژه از یک POS متن‌باز مبتنی بر Flutter شخصی‌سازی شده و اکنون وارد مرحله جداسازی هویت، فارسی‌سازی و توسعه اختصاصی AS Team شده است.
 
-## Features
+### قابلیت‌های پایه موجود
 
-![Introduction](https://evan361425.github.io/flutter-pos-system/images/index-introduction.png)
+- ثبت سفارش و فروش
+- مدیریت کالا و دسته‌بندی
+- مدیریت موجودی
+- صندوق و محاسبات روزانه
+- گزارش و نمودار
+- چاپ رسید با چاپگرهای پشتیبانی‌شده
+- انتقال و پشتیبان‌گیری داده
+- دیتابیس محلی
+- طراحی Responsive
 
-Key features of this POS system:
+## مشخصات پروژه
 
-- Inventory system: Monitor and manage ingredient inventory.
-- Customer information: Capture customer demographics (e.g., age, gender) for analytics.
-- Cash register: Simplify daily balance calculations.
-- Transit: Export and backup orders, menus, and other data for external use.
-- Analytics: Create custom line charts and pie charts for analysis.
-- Printer: Print receipts via Bluetooth connection.
+- نام فارسی: **فروشیار**
+- Repository: `AS-FrooshYar`
+- Android Application ID: `com.asteam.frooshyar`
+- Developer: **AS Team Group**
+- Support: `AS.Developers.Support@Gmail.Com`
 
-Design Principles:
+## جهت توسعه
 
-- Offline usage: Use the system even without an internet connection.
-- Privacy-focused: No personal data is stored remotely, only on your device.
-- Responsive Width Design.
+نسخه AS-FrooshYar برای بازار فارسی روی این موارد توسعه پیدا می‌کند:
 
-## Download
+- رابط فارسی و RTL
+- تومان/ریال و فرمت سه‌رقمی قیمت
+- تاریخ شمسی
+- مشتریان و فاکتورهای فارسی
+- تخفیف، مالیات و روش‌های پرداخت
+- بارکد و مدیریت موجودی فروشگاهی
+- Drawer استاندارد AS Team
+- Backup/Restore مطمئن
+- Migration دیتابیس و نصب آپدیت بدون حذف اطلاعات
+- بررسی نسخه جدید داخل برنامه
 
-- **Android**: Download from [Google Play](https://play.google.com/store/apps/details?id=com.evanlu.possystem).
-- **iOS**: Coming soon.
+نقشه راه کامل در [`docs/AS_FROOSHYAR_ROADMAP_FA.md`](docs/AS_FROOSHYAR_ROADMAP_FA.md) قرار دارد.
 
-## Develop & Contribute
+## ساختار فنی
 
-Want to help make POS System even better? We'd love your help!
-POS System is an open-source project that's built one contribution at a time.
-Check out [Development](https://evan361425.github.io/flutter-pos-system/maintenance/development/)
-to prepare your environment to build and test POS System.
-Check out [Contributing](https://evan361425.github.io/flutter-pos-system/about/contribute/)
-to learn how you can make POS System better!
+- Flutter / Dart
+- SQLite (`sqflite`) و ذخیره‌سازی محلی
+- Provider برای State Management
+- GoRouter برای Navigation
+- پشتیبانی Android / iOS و ساختار چندسکویی Flutter
 
-## Learn More
+## Build
 
-To help you quickly get an [overview of the project's structure](https://evan361425.github.io/flutter-pos-system/about/structure/),
-we also provide some simple documentation to help you
-get involved in the project more quickly.
-It's also a great starting point for Flutter beginners!
+برای توسعه ابتدا Flutter SDK سازگار با نسخه مشخص‌شده در `pubspec.yaml` را نصب کنید و سپس:
 
-## License
+```bash
+flutter pub get
+flutter run --flavor dev
+```
 
-Please refer to the [LICENSE](LICENSE)。
+برای Release باید keystore اختصاصی AS Team خارج از Git نگهداری شود و `android/key.properties` روی محیط Build تنظیم شود.
+
+## مجوز و Attribution
+
+این مخزن بر پایه پروژه متن‌باز `flutter-pos-system` توسعه یافته است و کد پایه تحت Apache License 2.0 قرار دارد. فایل `LICENSE` و اعلان‌های لازم مربوط به کد متن‌باز باید حفظ شوند. تغییر نام و توسعه اختصاصی AS-FrooshYar مالکیت یا شرایط مجوز کدهای ثالث را تغییر نمی‌دهد.
