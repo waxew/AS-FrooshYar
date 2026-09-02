@@ -1,46 +1,29 @@
 import 'package:flutter/material.dart';
-import 'package:possystem/components/style/pop_button.dart';
+import 'package:possystem/components/style/buttons.dart';
 import 'package:possystem/models/printer.dart';
 import 'package:possystem/services/bluetooth.dart';
 import 'package:possystem/translator.dart';
 
 class PrinterInfoDialog extends StatelessWidget {
   final Printer printer;
-  final BluetoothSignal? signal;
-  final PrinterStatus? status;
 
-  const PrinterInfoDialog({super.key, required this.printer, this.signal, this.status});
+  const PrinterInfoDialog({super.key, required this.printer});
+
+  static Future<bool?> show(BuildContext context, Printer printer) {
+    return showDialog<bool>(context: context, builder: (context) => PrinterInfoDialog(printer: printer));
+  }
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(S.printerInfoTitle),
-      scrollable: true,
+      title: Text(printer.name),
       content: Column(
-        mainAxisSize: .min,
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ListTile(
-            title: Text(S.printerInfoName),
-            leading: const Icon(Icons.text_fields),
-            subtitle: Text(printer.name),
-          ),
-          ListTile(
-            title: Text(S.printerInfoAddress),
-            leading: const Icon(Icons.location_on),
-            subtitle: Text(printer.address),
-          ),
-          if (signal != null)
-            ListTile(
-              title: Text(S.printerInfoSignal),
-              leading: signalIcons[signal],
-              subtitle: Text(S.printerSignalName(signal!.name)),
-            ),
-          if (status != null)
-            ListTile(
-              title: Text(S.printerInfoStatus),
-              leading: statusIcons[status],
-              subtitle: Text(S.printerStatusName(status!.name)),
-            ),
+          Text(printer.address),
+          const SizedBox(height: 8),
+          Text(printer.provider.name),
         ],
       ),
       actions: [
@@ -60,16 +43,16 @@ const signalIcons = {
   BluetoothSignal.good: Icon(Icons.signal_cellular_alt),
 };
 
+/// Only statuses exposed by the public compatibility package are mapped here.
 const statusIcons = {
   PrinterStatus.good: Icon(Icons.check_circle_outline, color: Colors.green),
-  PrinterStatus.unrecoverable: Icon(Icons.error_outline, color: Colors.red),
   PrinterStatus.writeFailed: Icon(Icons.error_outline, color: Colors.red),
-  PrinterStatus.paperJams: Icon(Icons.error_outline, color: Colors.red),
   PrinterStatus.paperNotFound: Icon(Icons.error_outline, color: Colors.red),
   PrinterStatus.lowBattery: Icon(Icons.warning_amber_outlined, color: Colors.orange),
   PrinterStatus.tooHot: Icon(Icons.warning_amber_outlined, color: Colors.orange),
-  PrinterStatus.uncovering: Icon(Icons.warning_amber_outlined, color: Colors.orange),
-  PrinterStatus.noResponse: Icon(Icons.warning_amber_outlined, color: Colors.orange),
   PrinterStatus.unknown: Icon(Icons.warning_amber_outlined, color: Colors.orange),
-  PrinterStatus.printing: SizedBox.square(dimension: 16, child: CircularProgressIndicator.adaptive(strokeWidth: 2)),
+  PrinterStatus.printing: SizedBox.square(
+    dimension: 16,
+    child: CircularProgressIndicator.adaptive(strokeWidth: 2),
+  ),
 };
