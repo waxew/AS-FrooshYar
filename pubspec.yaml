@@ -1,8 +1,9 @@
 name: possystem
-description: POS system by Flutter
+description: AS-FrooshYar - Persian offline-first sales, inventory and cashier application by AS Team Group
 publish_to: "none"
-homepage: https://github.com/evan361425/flutter-pos-system
-version: 2.12.0+21200004
+homepage: https://github.com/waxew/AS-FrooshYar
+repository: https://github.com/waxew/AS-FrooshYar
+version: 1.0.0+1
 
 environment:
   flutter: ">=3.41.0 <3.42.0"
@@ -56,7 +57,7 @@ dependencies:
   flutter_svg: ^2.2.1  # 25, 06-16
 
   # Make it easy to test
-  file: ^7.0.1  # 24, 10-08
+  file: ^7.0.1  # 24, 08-13
 
   # tools
   uuid: ^4.5.1  # 24, 09-26
@@ -89,34 +90,11 @@ dev_dependencies:
 
   arb_glue: ^1.0.0
 
-# For information on the generic Dart part of this file, see the
-# following page: https://dart.dev/tools/pub/pubspec
-
-# The following section is specific to Flutter.
 flutter:
+  generate: true
   uses-material-design: true
 
-  # Enable generation of localized Strings from arb files.
-  generate: true
-
   assets:
-  - assets/food_placeholder.png
-  - assets/google_sheet_icon.svg
-  - assets/feature_request_please.gif
-  - assets/google_signin_button.svg
-  - assets/excel_icon.svg
-
-# flutter pub run flutter_native_splash:create
-flutter_native_splash:
-  color: "#5c98ff"
-  fullscreen: true
-  image: assets/logo.png
-
-arb_glue:
-  source: assets/l10n
-  destination: lib/l10n
-  author: Lu Shueh Chou
-  fileTemplate: 'app_{lang}.arb'
-  base: en
-  lastModified: false
-  verbose: true
+    - assets/images/
+    - assets/l10n/en/
+    - assets/l10n/zh/
