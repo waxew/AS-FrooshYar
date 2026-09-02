@@ -1,26 +1,32 @@
 plugins {
   id "com.android.application"
-    // START: FlutterFire Configuration
-  id "com.google.gms.google-services"
-  id "com.google.firebase.crashlytics"
-  id 'com.google.firebase.firebase-perf'
-    // END: FlutterFire Configuration
   id "kotlin-android"
   id "dev.flutter.flutter-gradle-plugin"
 }
 
+// Keep local developer settings optional so CI and fresh clones do not fail
+// before Flutter has generated local.properties.
 def localProperties = new Properties()
-rootProject.file('local.properties').withInputStream { localProperties.load(it) }
+def localPropertiesFile = rootProject.file('local.properties')
+if (localPropertiesFile.exists()) {
+  localPropertiesFile.withInputStream { localProperties.load(it) }
+}
 
+// Release signing is optional during development. A publish build must provide
+// android/key.properties and the matching keystore without committing secrets.
 def keystoreProperties = new Properties()
-rootProject.file('key.properties').withInputStream { keystoreProperties.load(it) }
+def keystorePropertiesFile = rootProject.file('key.properties')
+if (keystorePropertiesFile.exists()) {
+  keystorePropertiesFile.withInputStream { keystoreProperties.load(it) }
+}
+def hasReleaseSigning = keystorePropertiesFile.exists() && keystoreProperties['storeFile']
 
-def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
-def flutterVersionName = localProperties.getProperty('flutter.versionName')
+def flutterVersionCode = localProperties.getProperty('flutter.versionCode') ?: "1"
+def flutterVersionName = localProperties.getProperty('flutter.versionName') ?: "1.0.0"
 def buildNumber = System.getenv("BUILD_NUMBER") ?: "0"
 
 android {
-  namespace "com.evanlu.possystem"
+  namespace "com.asteam.frooshyar"
   compileSdkVersion flutter.compileSdkVersion
   ndkVersion flutter.ndkVersion
 
@@ -38,9 +44,7 @@ android {
   }
 
   defaultConfig {
-    applicationId "com.evanlu.possystem"
-    // default: flutter.minSdkVersion
-    // but firebase auth requires 23
+    applicationId "com.asteam.frooshyar"
     minSdkVersion = flutter.minSdkVersion
     targetSdkVersion flutter.targetSdkVersion
     multiDexEnabled true
@@ -49,23 +53,27 @@ android {
   }
 
   signingConfigs {
-    release {
-      keyAlias keystoreProperties['keyAlias']
-      keyPassword keystoreProperties['keyPassword']
-      storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
-      storePassword keystoreProperties['storePassword']
+    if (hasReleaseSigning) {
+      release {
+        keyAlias keystoreProperties['keyAlias']
+        keyPassword keystoreProperties['keyPassword']
+        storeFile file(keystoreProperties['storeFile'])
+        storePassword keystoreProperties['storePassword']
+      }
     }
   }
 
   buildTypes {
     release {
       minifyEnabled true
-      signingConfig signingConfigs.release
+      shrinkResources true
+      if (hasReleaseSigning) {
+        signingConfig signingConfigs.release
+      }
     }
 
     debug {
       debuggable true
-      signingConfig signingConfigs.release
     }
   }
 
@@ -81,6 +89,7 @@ android {
       versionNameSuffix "-dev+" + buildNumber
     }
   }
+
   lintOptions {
     disable 'InvalidPackage'
     checkReleaseBuilds false
@@ -98,11 +107,6 @@ flutter {
 }
 
 dependencies {
-  implementation 'com.android.support:multidex:1.0.3'
-  // kotlin version
   implementation "org.jetbrains.kotlin:kotlin-stdlib:2.1.21"
   implementation "androidx.multidex:multidex:2.0.1"
 }
-
-// This must appear at the bottom of the file
-apply plugin: 'com.google.firebase.crashlytics'
