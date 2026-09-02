@@ -32,9 +32,6 @@ class Printers extends ChangeNotifier with Repository<Printer>, RepositoryStorag
 
   Printers() {
     instance = this;
-    if (kDebugMode) {
-      bt.Logger.level = bt.LogLevel.debug;
-    }
   }
 
   @override
@@ -45,7 +42,6 @@ class Printers extends ChangeNotifier with Repository<Printer>, RepositoryStorag
 
   bool get hasConnected => items.any((e) => e.connected);
 
-  /// Get all the width of the connected printer, and remove the duplicate.
   List<int> get wantedPixelsWidths =>
       items.where((e) => e.connected).map((e) => e.p.manufactory.widthBits).toSet().toList();
 
@@ -58,15 +54,11 @@ class Printers extends ChangeNotifier with Repository<Printer>, RepositoryStorag
 
   @override
   Future<void> initialize({String? record}) async {
-    // follow [Printer.prefix]
     await super.initialize(record: 'printer');
 
     final data = await Storage.instance.get(storageStore, 'setting');
     density = PrinterDensity.values.elementAtOrNull(data['density'] as int? ?? 0) ?? PrinterDensity.normal;
 
-    // storage must make sure parent is initialized, so we need to
-    // set printer to `{}`, otherwise we will failed to add printer
-    // to the storage.
     if (isEmpty && data.isEmpty) {
       await Future.wait([
         Storage.instance.add(storageStore, 'setting', {'density': density.index}),
@@ -80,19 +72,13 @@ class Printers extends ChangeNotifier with Repository<Printer>, RepositoryStorag
     return _saveProperties();
   }
 
-  /// Generate receipt in pixel format.
-  ///
-  /// Separate the print action to another function, so we can first pop the
-  /// dialog and then print the receipt in the background.
   Future<List<ConvertibleImage>?> generateReceipts({required BuildContext context, required OrderObject order}) {
     if (!Printers.instance.hasConnected) {
       return Future.value(null);
     }
-
     return CheckoutReceiptDialog.show(context, order, wantedPixelsWidths);
   }
 
-  /// Allow background print.
   void printReceipts(List<ConvertibleImage> images) async {
     final errors = <Object>[];
     final stackTraces = <StackTrace>[];
@@ -102,11 +88,9 @@ class Printers extends ChangeNotifier with Repository<Printer>, RepositoryStorag
     final futures = group.entries
         .map((entry) {
           final image = images.firstWhere((e) => e.width == entry.key);
-
           return entry.value.map(
             (printer) => printer.draw(image.bytes).drain().onError((e, s) {
-              final msg = '${printer.name}: $e';
-              errors.add(msg);
+              errors.add('${printer.name}: $e');
               stackTraces.add(s);
               return 1;
             }),
@@ -123,25 +107,17 @@ class Printers extends ChangeNotifier with Repository<Printer>, RepositoryStorag
 
   Future<void> _saveProperties() async {
     Log.ger('update_repo', {'type': storageStore.name, 'density': density.index});
-
     await Storage.instance.set(storageStore, {
       'setting': {'density': density.index},
     });
-
     notifyListeners();
   }
 }
 
 class Printer extends Model<PrinterObject> with ModelStorage<PrinterObject> implements Comparable<Printer> {
   String address;
-
   bool autoConnect;
-
   PrinterProvider provider;
-
-  /// p stands for printer
-  ///
-  /// It handle the connection and drawing of the printer
   bt.Printer p;
 
   @override
@@ -176,60 +152,39 @@ class Printer extends Model<PrinterObject> with ModelStorage<PrinterObject> impl
   );
 
   @override
-  PrinterObject toObject() {
-    return PrinterObject(id: id, name: name, address: address, autoConnect: autoConnect, provider: provider.index);
-  }
+  PrinterObject toObject() =>
+      PrinterObject(id: id, name: name, address: address, autoConnect: autoConnect, provider: provider.index);
 
   @override
   Future<void> remove() async {
     await p.disconnect();
-
     await super.remove();
   }
 
-  /// Connect printer
   Future<bool> connect() {
     Log.ger('connect_printer');
-
     return p.connect();
   }
 
-  /// Disconnect printer, it is ok if not connected
   Future<void> disconnect() {
     Log.ger('disconnect_printer');
-
     return p.disconnect();
   }
 
-  /// Draw image to printer.
-  ///
-  /// Return the progress (in percentage) of the drawing
   Stream<double> draw(Uint8List image) {
     Log.out('start', 'printer_draw');
-
     return p.draw(image, density: Printers.instance.density);
   }
 
-  /// Connected printer has a higher priority
   @override
   int compareTo(Printer other) {
     int myScore = 0;
-    if (connected) {
-      myScore -= 2;
-    }
-    if (autoConnect) {
-      myScore -= 1;
-    }
+    if (connected) myScore -= 2;
+    if (autoConnect) myScore -= 1;
 
     int otherScore = 0;
-    if (other.connected) {
-      otherScore -= 2;
-    }
-    if (other.autoConnect) {
-      otherScore -= 1;
-    }
-
-    // default using ascending order, so smaller score is better
+    if (other.connected) otherScore -= 2;
+    if (other.autoConnect) otherScore -= 1;
     return myScore.compareTo(otherScore);
   }
 }
@@ -244,9 +199,8 @@ class PrinterObject extends ModelObject<Printer> {
   PrinterObject({this.id, this.name, this.address, this.autoConnect, this.provider});
 
   @override
-  Map<String, Object> toMap() {
-    return {'name': name!, 'address': address!, 'autoConnect': autoConnect!, 'provider': provider!};
-  }
+  Map<String, Object> toMap() =>
+      {'name': name!, 'address': address!, 'autoConnect': autoConnect!, 'provider': provider!};
 
   @override
   Map<String, Object> diff(Printer model) {
@@ -261,36 +215,26 @@ class PrinterObject extends ModelObject<Printer> {
       model.autoConnect = autoConnect!;
       result['$prefix.autoConnect'] = autoConnect!;
     }
-
     return result;
   }
 
-  factory PrinterObject.build(Map<String, Object?> data) {
-    return PrinterObject(
-      id: data['id'] as String,
-      name: data['name'] as String,
-      address: data['address'] as String,
-      autoConnect: data['autoConnect'] as bool,
-      provider: data['provider'] as int,
-    );
-  }
+  factory PrinterObject.build(Map<String, Object?> data) => PrinterObject(
+    id: data['id'] as String,
+    name: data['name'] as String,
+    address: data['address'] as String,
+    autoConnect: data['autoConnect'] as bool,
+    provider: data['provider'] as int,
+  );
 }
 
 enum PrinterProvider {
   catPrinter(bt.CatPrinter(feedPaperByteSize: 1)),
   catPrinter2(bt.CatPrinter(feedPaperByteSize: 2)),
-  // epsonPrinter(
-  //   bt.EpsonPrinter(),
-  //   link: 'https://epson.com/Support/Point-of-Sale/Thermal-Printers/sh/s530',
-  // ),
-  xPrinter58(bt.XPrinter(), link: 'https://www.xprinter.net/', markers: ['XP-58', 'XP-76', 'XP-80']),
-  xPrinter76(bt.XPrinter(widthMM: 76, widthBits: 528)),
-  xPrinter80(bt.XPrinter(widthMM: 80, widthBits: 560)),
-  yokoscan58(
-    bt.YokoscanPrinter(widthMM: 58, widthBits: 384),
-    link: 'https://yokoscan.net/product/product.php?class2=184',
-  ),
-  yokoscan80(bt.YokoscanPrinter(widthMM: 80, widthBits: 560));
+  xPrinter58(bt.CatPrinter(), link: 'https://www.xprinter.net/', markers: ['XP-58', 'XP-76', 'XP-80']),
+  xPrinter76(bt.CatPrinter()),
+  xPrinter80(bt.CatPrinter()),
+  yokoscan58(bt.CatPrinter(), link: 'https://yokoscan.net/product/product.php?class2=184'),
+  yokoscan80(bt.CatPrinter());
 
   final PrinterManufactory manufactory;
   final String? link;
@@ -300,10 +244,12 @@ enum PrinterProvider {
 
   static PrinterProvider? tryGuess(String name) {
     Log.out('guess printer name: $name', 'printer');
-    final v = (PrinterManufactory.tryGuess(name)).toString();
-    Log.out('guessed printer manufactory: $v', 'printer');
-
-    return PrinterProvider.values.firstWhereOrNull((e) => e.manufactory.toString() == v);
+    for (final provider in PrinterProvider.values) {
+      if (provider.markers.any((marker) => name.toUpperCase().contains(marker.toUpperCase()))) {
+        return provider;
+      }
+    }
+    return null;
   }
 
   void launchUrl() {
