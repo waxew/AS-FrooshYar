@@ -36,6 +36,11 @@ dependencies:
     git:
       url: https://github.com/evan361425/flutter-pos-packages-mock
       ref: master
+  flutter_blue_plus:
+    git:
+      url: https://github.com/evan361425/flutter_blue_plus
+      ref: uint8
+      path: packages/flutter_blue_plus
 
   # google services
   googleapis: ^14.0.0
@@ -73,6 +78,13 @@ dependencies:
     git:
       url: https://github.com/evan361425/excel
       ref: patch-1
+
+dependency_overrides:
+  flutter_blue_plus:
+    git:
+      url: https://github.com/evan361425/flutter_blue_plus
+      ref: uint8
+      path: packages/flutter_blue_plus
 
 dev_dependencies:
   flutter_test:
