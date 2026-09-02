@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:possystem/components/style/buttons.dart';
 import 'package:possystem/models/printer.dart';
 import 'package:possystem/services/bluetooth.dart';
 import 'package:possystem/translator.dart';
 
 class PrinterInfoDialog extends StatelessWidget {
   final Printer printer;
+  final BluetoothSignal? signal;
+  final PrinterStatus? status;
 
-  const PrinterInfoDialog({super.key, required this.printer});
+  const PrinterInfoDialog({super.key, required this.printer, this.signal, this.status});
 
   static Future<bool?> show(BuildContext context, Printer printer) {
     return showDialog<bool>(context: context, builder: (context) => PrinterInfoDialog(printer: printer));
@@ -24,10 +25,18 @@ class PrinterInfoDialog extends StatelessWidget {
           Text(printer.address),
           const SizedBox(height: 8),
           Text(printer.provider.name),
+          if (signal != null) ...[
+            const SizedBox(height: 8),
+            Row(children: [signalIcons[signal] ?? const Icon(Icons.bluetooth), const SizedBox(width: 8), const Text('سیگنال')]),
+          ],
+          if (status != null) ...[
+            const SizedBox(height: 8),
+            Row(children: [statusIcons[status] ?? const Icon(Icons.info_outline), const SizedBox(width: 8), const Text('وضعیت چاپگر')]),
+          ],
         ],
       ),
       actions: [
-        PopButton(title: MaterialLocalizations.of(context).cancelButtonLabel),
+        TextButton(onPressed: () => Navigator.of(context).pop(false), child: Text(MaterialLocalizations.of(context).cancelButtonLabel)),
         ElevatedButton(
           onPressed: () => Navigator.of(context).pop(true),
           child: Text(printer.connected ? S.printerBtnDisconnect : S.printerBtnConnect),
@@ -43,7 +52,6 @@ const signalIcons = {
   BluetoothSignal.good: Icon(Icons.signal_cellular_alt),
 };
 
-/// Only statuses exposed by the public compatibility package are mapped here.
 const statusIcons = {
   PrinterStatus.good: Icon(Icons.check_circle_outline, color: Colors.green),
   PrinterStatus.writeFailed: Icon(Icons.error_outline, color: Colors.red),
@@ -51,8 +59,5 @@ const statusIcons = {
   PrinterStatus.lowBattery: Icon(Icons.warning_amber_outlined, color: Colors.orange),
   PrinterStatus.tooHot: Icon(Icons.warning_amber_outlined, color: Colors.orange),
   PrinterStatus.unknown: Icon(Icons.warning_amber_outlined, color: Colors.orange),
-  PrinterStatus.printing: SizedBox.square(
-    dimension: 16,
-    child: CircularProgressIndicator.adaptive(strokeWidth: 2),
-  ),
+  PrinterStatus.printing: SizedBox.square(dimension: 16, child: CircularProgressIndicator.adaptive(strokeWidth: 2)),
 };
