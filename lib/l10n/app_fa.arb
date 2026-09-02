@@ -59,7 +59,7 @@
   "transitDescription": "ورود، خروجی و پشتیبان‌گیری از اطلاعات فروشگاه و سفارش‌ها",
   "transitMethodTitle": "روش انتقال اطلاعات را انتخاب کنید",
   "transitCatalogTitle": "عملیات موردنظر با {name}",
-  "@transitCatalogTitle": {"placeholders": {"name": {"type": "String"}}},
+  "@transitCatalogTitle": {"placeholders": {"name": {"type": "Object"}}},
   "actSuccess": "عملیات با موفقیت انجام شد",
   "actError": "خطایی رخ داد",
   "actMoreInfo": "جزئیات بیشتر",
