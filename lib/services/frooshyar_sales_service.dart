@@ -18,8 +18,14 @@ class FrooshyarSalesService {
     required int paid,
     required List<Map<String, dynamic>> items,
   }) async {
+    // The next local id is used only for a readable offline invoice number.
+    final existing = await invoiceDao.getAll();
+    final nextId = existing.isEmpty
+        ? 1
+        : ((existing.first['id'] as num?)?.toInt() ?? 0) + 1;
+
     final invoiceId = await invoiceDao.createInvoice(
-      invoiceNumber: FrooshyarInvoiceNumber.generate(),
+      invoiceNumber: FrooshyarInvoiceNumber.generate(nextId),
       customerId: customerId,
       totalAmount: total,
       paidAmount: paid,
