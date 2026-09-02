@@ -4,14 +4,17 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:possystem/settings/setting.dart';
 
-/// Language setting allow given null language which means system default.
+/// Application language preference.
+///
+/// FrooshYar is Persian-first, while still allowing users to switch to the
+/// inherited English and Traditional Chinese translations.
 class LanguageSetting extends Setting<Language?> {
   Language? _systemLanguage;
 
   static final LanguageSetting instance = ._();
 
   LanguageSetting._() {
-    value = null;
+    value = .fa;
   }
 
   @override
@@ -20,24 +23,23 @@ class LanguageSetting extends Setting<Language?> {
   @override
   bool get registryForApp => true;
 
-  /// Set system language for fallback.
-  ///
-  /// This is not idempotent, it will only set once.
+  /// Capture the system locale once. Unsupported system locales safely fall
+  /// back to Persian instead of throwing during application startup.
   set systemLanguage(String locale) {
-    _systemLanguage ??= parseLanguage(locale)!;
+    _systemLanguage ??= parseLanguage(locale) ?? .fa;
   }
 
-  Language get language => value ?? _systemLanguage ?? .en;
+  Language get language => value ?? _systemLanguage ?? .fa;
 
   @override
   void initialize() {
-    value = parseLanguage(service.get<String>(key));
+    value = parseLanguage(service.get<String>(key)) ?? .fa;
     notifyListeners();
   }
 
   @override
   Future<void> updateRemotely(Language? data) {
-    return service.set<String>(key, data?.locale.toString() ?? '');
+    return service.set<String>(key, (data ?? .fa).locale.toString());
   }
 
   Language? parseLanguage(String? value) {
@@ -50,8 +52,9 @@ class LanguageSetting extends Setting<Language?> {
 }
 
 enum Language {
-  zhTW(Locale('zh', 'TW'), '繁體中文'),
-  en(Locale('en'), 'English');
+  fa(Locale('fa', 'IR'), 'فارسی'),
+  en(Locale('en'), 'English'),
+  zhTW(Locale('zh', 'TW'), '繁體中文');
 
   final Locale locale;
 
