@@ -2,54 +2,55 @@ import 'package:intl/intl.dart';
 import 'package:possystem/settings/language_setting.dart';
 import 'package:possystem/settings/setting.dart';
 
+/// Currency and cash denomination configuration used by the cashier.
 class CurrencySetting extends Setting<CurrencyTypes> {
   static CurrencySetting instance = ._();
 
-  static const CurrencyTypes defaultValue = .twd;
+  /// FrooshYar targets Persian stores, so Iranian Rial is the default.
+  static const CurrencyTypes defaultValue = .irr;
 
   static const supports = <CurrencyTypes, List<num>>{
     .twd: [1, 5, 10, 50, 100, 500, 1000],
     .usd: [0.01, 0.05, 0.1, 0.25, 0.5, 1, 5, 10, 20, 50, 100],
+    .irr: [1000, 5000, 10000, 20000, 50000, 100000, 500000, 1000000],
   };
 
-  /// Current available unit of money
-  List<num> unitList = CurrencySetting.supports[CurrencyTypes.twd]!;
+  /// Current available units of money.
+  List<num> unitList = CurrencySetting.supports[defaultValue]!;
 
-  /// Is this currency all int?
+  /// Whether this currency only uses integer values.
   bool isInt = true;
 
-  /// Index of integer in [unitList]
+  /// Index of first integer denomination in [unitList].
   int intIndex = 0;
 
   CurrencySetting._() {
     value = defaultValue;
-    LanguageSetting.instance.addListener(() {
-      formatter = NumberFormat.compact(locale: LanguageSetting.instance.language.locale.toString());
-    });
+    LanguageSetting.instance.addListener(_refreshFormatter);
   }
 
   @override
   String get key => 'currency';
 
-  String get recordName => '新台幣';
+  String get recordName => switch (value) {
+    .irr => 'ریال',
+    .usd => 'USD',
+    .twd => 'TWD',
+  };
 
-  NumberFormat formatter = NumberFormat.compact(locale: LanguageSetting.instance.language.locale.toString());
+  /// Price formatter deliberately uses grouping rather than compact notation
+  /// so values are rendered like 1,250,000 instead of 1.25M.
+  NumberFormat formatter = NumberFormat.decimalPattern('fa_IR');
 
-  /// Ceiling [value] to currency least value
-  ///
-  /// 1~4 => 5
-  /// 5~9 => 10
-  /// 10 => 50
-  /// 11~14 => 15
-  /// 15~19 => 20
-  /// 50 => 100
-  /// 110 => 150
+  void _refreshFormatter() {
+    formatter = NumberFormat.decimalPattern(LanguageSetting.instance.language.locale.toString());
+  }
+
+  /// Ceiling [value] to the next supported cash unit.
   num ceil(num data) {
     assert(data >= 0);
 
     if (data == 0) return 0;
-
-    // if it is double ceil to int first
     if (data != data.ceil()) return data.ceil();
 
     final next = unitList.indexWhere((e) => e > data);
@@ -65,9 +66,7 @@ class CurrencySetting extends Setting<CurrencyTypes> {
     return data;
   }
 
-  /// Get all possible value to currency maximum
-  ///
-  /// Ex. 63 => [65, 70, 100, 500, 1000]
+  /// Get possible cash values up to the maximum denomination.
   Iterable<num> ceilToMaximum(num minimum) sync* {
     yield minimum;
 
@@ -82,19 +81,23 @@ class CurrencySetting extends Setting<CurrencyTypes> {
 
   @override
   void initialize() {
-    value = CurrencyTypes.values[service.get<int>(key) ?? defaultValue.index];
+    final storedIndex = service.get<int>(key);
+    value = storedIndex != null && storedIndex >= 0 && storedIndex < CurrencyTypes.values.length
+        ? CurrencyTypes.values[storedIndex]
+        : defaultValue;
     _setMetadata(value);
+    _refreshFormatter();
   }
 
   @override
   Future<void> updateRemotely(CurrencyTypes data) {
+    _setMetadata(data);
     return service.set<int>(key, data.index);
   }
 
   void _setMetadata(CurrencyTypes value) {
     unitList = supports[value]!;
 
-    // index when money start using int
     intIndex = 0;
     for (var money in unitList) {
       if (money.toInt() == money) break;
@@ -105,4 +108,4 @@ class CurrencySetting extends Setting<CurrencyTypes> {
   }
 }
 
-enum CurrencyTypes { twd, usd }
+enum CurrencyTypes { twd, usd, irr }
