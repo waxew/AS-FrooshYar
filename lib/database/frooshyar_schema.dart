@@ -4,7 +4,7 @@
 /// losing user data in future releases.
 class FrooshyarSchema {
   static const databaseName = 'frooshyar.db';
-  static const version = 1;
+  static const version = 2;
 
   static const customers = '''
   CREATE TABLE customers (
@@ -46,6 +46,18 @@ class FrooshyarSchema {
     product_id INTEGER NOT NULL,
     quantity REAL NOT NULL,
     price INTEGER NOT NULL
+  )
+  ''';
+
+  static const payments = '''
+  CREATE TABLE payments (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    invoice_id INTEGER NOT NULL,
+    customer_id INTEGER,
+    amount INTEGER NOT NULL DEFAULT 0,
+    method TEXT NOT NULL,
+    note TEXT,
+    created_at INTEGER NOT NULL
   )
   ''';
 
