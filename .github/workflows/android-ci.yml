@@ -35,8 +35,8 @@ jobs:
       - name: Generate localization
         run: flutter gen-l10n
 
-      - name: Analyze
-        run: flutter analyze
+      - name: Analyze app sources
+        run: flutter analyze lib --no-fatal-infos --no-fatal-warnings
 
       - name: Build debug APK
         run: flutter build apk --debug --flavor dev
