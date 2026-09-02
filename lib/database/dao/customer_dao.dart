@@ -1,23 +1,34 @@
 import '../frooshyar_repository.dart';
+import '../sqlite/frooshyar_sqlite_helper.dart';
 
-/// Customer data access layer.
-///
-/// All customer operations will go through this class to keep database logic
-/// separated from screens.
+/// Customer CRUD operations.
 class CustomerDao {
   final FrooshyarRepository repository;
 
   CustomerDao(this.repository);
 
   Future<List<Map<String, dynamic>>> getAll() async {
-    return [];
+    final db = await FrooshyarSqliteHelper.instance.database;
+    return db.query('customers', orderBy: 'id DESC');
   }
 
   Future<int> insert(Map<String, dynamic> customer) async {
-    return 0;
+    final db = await FrooshyarSqliteHelper.instance.database;
+    return db.insert('customers', customer);
   }
 
-  Future<void> update(Map<String, dynamic> customer) async {}
+  Future<int> update(Map<String, dynamic> customer) async {
+    final db = await FrooshyarSqliteHelper.instance.database;
+    return db.update(
+      'customers',
+      customer,
+      where: 'id = ?',
+      whereArgs: [customer['id']],
+    );
+  }
 
-  Future<void> delete(int id) async {}
+  Future<int> delete(int id) async {
+    final db = await FrooshyarSqliteHelper.instance.database;
+    return db.delete('customers', where: 'id = ?', whereArgs: [id]);
+  }
 }
